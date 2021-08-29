@@ -34,7 +34,7 @@ import process
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class CacheProxy {
+class CacheProxy(private val port: Int) {
     companion object {
         const val GHA_CACHE_URL = "GHA_CACHE_URL"
         private const val TEMP_DIR = ".cache-proxy"
@@ -185,7 +185,7 @@ class CacheProxy {
 
     suspend fun start() {
         suspendCoroutine<Nothing?> { cont ->
-            server.listen(0) {
+            server.listen(port) {
                 cont.resume(null)
             }
         }

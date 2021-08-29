@@ -27,4 +27,5 @@ data class Parameters(
     val mavenLocalIgnorePaths: List<String>,
     val concurrent: Boolean,
     val readOnly: Boolean,
+    val port: Int,
 )

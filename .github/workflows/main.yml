@@ -29,7 +29,7 @@ jobs:
     - uses: burrunan/gradle-cache-action@v1
       name: Cache .gradle
     - name: Build
-      run: ./gradlew --no-parallel --no-daemon --build-cache build
+      run: ./gradlew --no-parallel --no-daemon --build-cache build -x nodeTest
     - name: Publish release
       if: ${{ github.ref == 'refs/heads/main' }}
       env:
@@ -52,8 +52,8 @@ jobs:
             AMEND=--amend
             FORCE=--force
           fi
-          git config --global user.email "sitnikov.vladimir@gmail.com"
-          git config --global user.name "CI"
+          git config --global user.email "noreply@github.com"
+          git config --global user.name "GitHub"
           git commit $AMEND -m "Publish release from $GITHUB_SHA"
           remote_repo="https://${GITHUB_ACTOR}:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push $remote_repo $FORCE release

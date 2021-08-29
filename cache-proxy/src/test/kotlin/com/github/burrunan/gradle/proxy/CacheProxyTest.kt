@@ -34,7 +34,7 @@ class CacheProxyTest {
     val cacheService = CacheService()
 
     // Implements Gradle HTTP Build Cache via @actions/cache
-    val cacheProxy = CacheProxy()
+    val cacheProxy = CacheProxy(0)
 
     @Test
     fun abc() = runTest {
