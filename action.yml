@@ -59,6 +59,10 @@ inputs:
     description: Activates a remote cache that proxies requests to GitHub Actions cache
     required: false
     default: 'true'
+  remote-build-cache-proxy-port:
+    description: A port on which cache proxy will serve request from gradle
+    required: false
+    default: '0'
   gradle-dependencies-cache-key:
     description: Extra files to take into account for ~/.gradle/caches dependencies
     required: false
