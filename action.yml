@@ -96,6 +96,10 @@ inputs:
     description: Enables warning when distributionSha256Sum property is missing in gradle-wrapper.properties
     required: false
     default: 'true'
+  write-init-script:
+    description: Whether a `~/init.gradle` file with cache config should be created. If set to false, all parameters should be added to gradle build scripts in the repo.
+    required: false
+    default: 'true'
 runs:
   using: node12
   main: dist/cache-action-entrypoint.js
