@@ -29,7 +29,6 @@ import com.github.burrunan.launcher.resolveDistribution
 import fs2.promises.writeFile
 import octokit.currentTrigger
 import path.path
-import kotlin.js.Date
 
 fun String.splitLines() =
     split(Regex("\\s*[\r\n]+\\s*"))
@@ -96,6 +95,7 @@ suspend fun mainInternal(stage: ActionStage) {
         concurrent = getInput("concurrent").ifBlank { "false" }.toBoolean(),
         readOnly = getInput("read-only").ifBlank { "false" }.toBoolean(),
         port = getInput("remote-build-cache-proxy-port").ifBlank { "0" }.toInt(),
+        shouldWriteInitScript = getInput("write-init-script").ifBlank { "true" }.toBoolean(),
     )
 
     val gradleDistribution = resolveDistribution(
@@ -131,24 +131,24 @@ suspend fun mainInternal(stage: ActionStage) {
         val cacheProxy = CacheProxy(params.port)
 
         if (cacheProxyEnabled) {
-            info("Starting remote cache proxy, adding it via ~/.gradle/init.gradle")
+            info("Starting remote cache proxy")
             cacheProxy.start()
-            val gradleHome = path.join(os.homedir(), ".gradle")
-            mkdirP(gradleHome)
-            val initScript = path.join(gradleHome, "init.gradle")
-            writeFile(
-                initScript,
-                cacheProxy.getMultiCacheConfiguration(
-                    multiCacheEnabled = getInput("multi-cache-enabled").ifBlank { "true" }.toBoolean(),
-                    multiCacheVersion = getInput("multi-cache-version").ifBlank { "1.0" },
-                    multiCacheRepository = getInput("multi-cache-repository"),
-                    multiCacheGroupIdFilter = getInput("multi-cache-group-id-filter").ifBlank { "com[.]github[.]burrunan[.]multi-?cache" },
-                    push = !params.readOnly,
-                ).also {
-                       println("Writing content to file init.gradle: $it")
-                },
-            )
-            fs.utimesSync(initScript, Date(42), Date(42))
+            if (params.shouldWriteInitScript) {
+                info("Adding remote cache proxy via ~/.gradle/init.gradle")
+                val gradleHome = path.join(os.homedir(), ".gradle")
+                mkdirP(gradleHome)
+                val initScript = path.join(gradleHome, "init.gradle")
+                writeFile(
+                    initScript,
+                    cacheProxy.getMultiCacheConfiguration(
+                        multiCacheEnabled = getInput("multi-cache-enabled").ifBlank { "true" }.toBoolean(),
+                        multiCacheVersion = getInput("multi-cache-version").ifBlank { "1.0" },
+                        multiCacheRepository = getInput("multi-cache-repository"),
+                        multiCacheGroupIdFilter = getInput("multi-cache-group-id-filter").ifBlank { "com[.]github[.]burrunan[.]multi-?cache" },
+                        push = !params.readOnly,
+                    ),
+                )
+            }
         }
 
         try {

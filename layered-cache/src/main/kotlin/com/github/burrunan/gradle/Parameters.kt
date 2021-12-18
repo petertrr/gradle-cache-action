@@ -28,4 +28,5 @@ data class Parameters(
     val concurrent: Boolean,
     val readOnly: Boolean,
     val port: Int,
+    val shouldWriteInitScript: Boolean,
 )
